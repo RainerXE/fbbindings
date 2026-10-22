@@ -2329,7 +2329,7 @@ quicklz: tools
 	#	-inclib quicklz -title QuickLZ quicklz.tmp fbteam.txt
 	rm *.tmp
 
-RAYLIB_VERSION := 3.0.0
+RAYLIB_VERSION := 6.0.0
 RAYLIB := raylib-$(RAYLIB_VERSION)
 RAYMATH := raymath-$(RAYLIB_VERSION)
 raylib: tools
@@ -2347,6 +2347,10 @@ raylib: tools
 	# GNU/Linux but the Makefile states "NOTE: It seems additional libraries
 	# are not required any more, latest GLFW just dlopen them"
 
+	# On Darwin, OpenGL and Cocoa are frameworks, not libraries, so -inclib
+	# cannot express them; the libraylib that programs link against already
+	# depends on them.  Static linking needs them on the command line as
+	# -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo.
 	$(FBFROG) raylib.fbfrog \
 		extracted/$(RAYLIB)/raylib.h \
 		-o inc/raylib.bi \
@@ -2362,8 +2366,6 @@ raylib: tools
 			-inclib dl \
 			-inclib rt \
 		-case darwin \
-			-inclib OpenGL \
-			-inclib Cocoa \
 		-caseelse \
 			-inclib GL \
 			-inclib X11 \
